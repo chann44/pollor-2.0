@@ -6,8 +6,11 @@ import { UserNav } from "@/components/navbar/user-nav";
 import { MainNav } from "@/components/navbar/main-nav";
 import { ModeToggle } from "@/components/mode-toggle";
 import { AuthNav } from "@/components/navbar/auth-nav";
+import { ModalCreatePoll } from "@/components/modals/modal-create-poll";
 
 export function SiteHeader() {
+  // here we gonna check for if a user is authenticated or not
+  const isAuthenticated = true;
   return (
     <header className="flex justify-between items-center h-11 border-b">
       <div className="flex items-center gap-4">
@@ -18,9 +21,11 @@ export function SiteHeader() {
       </div>
       <div className="flex gap-4 items-center">
         <Search />
-        <UserNav />
+        {isAuthenticated && <ModalCreatePoll />}
+        {isAuthenticated && <UserNav />}
+
         <ModeToggle />
-        <AuthNav />
+        {!isAuthenticated && <AuthNav />}
       </div>
     </header>
   );
