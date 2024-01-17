@@ -45,4 +45,41 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Vote          Vote[]
+  Poll          Poll[]
+}
+
+model Vote {
+  poll     Poll     @relation(fields: [pollId], references: [id])
+  pollId   Int
+  voter    User     @relation(fields: [voterId], references: [id])
+  voterId  String
+  option   Option   @relation(fields: [optionId], references: [id])
+  optionId Int
+  voted    Boolean? @default(false)
+
+  @@id([pollId, voterId])
+}
+
+model Poll {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  title     String
+  creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId String
+  votes     Int
+  Option    Option[]
+  Vote      Vote[]
+}
+
+model Option {
+  id        Int      @id @unique @default(autoincrement())
+  text      String
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  pollId    Int
+  vote      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Vote      Vote[]
 }
