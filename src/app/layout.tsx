@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/navbar/site-header";
 import { SiteFooter } from "@/components/footer/site-footer";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { AuthProviders } from "@/providers/auth-providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,11 +28,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="container">
-            <SiteHeader />
-            {children}
-            <SiteFooter />
-          </div>
+          <AuthProviders>
+            <div className="container">
+              <SiteHeader />
+              {children}
+              <SiteFooter />
+            </div>
+          </AuthProviders>
         </ThemeProvider>
       </body>
     </html>

@@ -1,8 +1,13 @@
+"use client";
+
+import { type HTMLAttributes } from "react";
+
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { siteRoutes } from "@/config/site";
-import { type HTMLAttributes } from "react";
+import { Button } from "@/components/ui/button";
+import { signIn } from "next-auth/react";
 
 export function AuthNav({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return (
@@ -10,12 +15,14 @@ export function AuthNav({ className, ...props }: HTMLAttributes<HTMLElement>) {
       className={cn("flex items-center space-x-4 lg:space-x-6", className)}
       {...props}
     >
-      <Link
-        href={siteRoutes.login}
+      <Button
+        onClick={async () => {
+          await signIn("google");
+        }}
         className="text-sm transition-colors hover:text-primary"
       >
         Login
-      </Link>
+      </Button>
       <Link
         href={siteRoutes.register}
         className="text-sm transition-colors hover:text-primary"
