@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { siteRoutes } from "@/config/site";
 
-import { Search } from "@/components/navbar/search";
 import { UserNav } from "@/components/navbar/user-nav";
-import { MainNav } from "@/components/navbar/main-nav";
 import { ModeToggle } from "@/components/mode-toggle";
 import { AuthNav } from "@/components/navbar/auth-nav";
 import { ModalCreatePoll } from "@/components/modals/modal-create-poll";

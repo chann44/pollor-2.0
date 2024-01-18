@@ -12,6 +12,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const { title, options } = PollInputValidator.parse(body);
+    console.log(title, options);
 
     const session = await getAuthSession();
 
@@ -46,7 +47,6 @@ export async function POST(req: Request) {
     });
 
     console.log(poll, pollOptions);
-
     return new NextResponse("OK", {
       status: 200,
     });

@@ -4,7 +4,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/navbar/site-header";
 import { SiteFooter } from "@/components/footer/site-footer";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { AuthProviders } from "@/providers/auth-providers";
+import { AppProviders } from "@/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,13 +28,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProviders>
+          <AppProviders>
             <div className="container">
+              {/* @ts-expect-error Async Server Component */}
               <SiteHeader />
               {children}
               <SiteFooter />
             </div>
-          </AuthProviders>
+          </AppProviders>
         </ThemeProvider>
       </body>
     </html>

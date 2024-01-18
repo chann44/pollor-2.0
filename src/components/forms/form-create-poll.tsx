@@ -1,8 +1,12 @@
 "use client";
 
 import * as z from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { QueryClient, useMutation, useQueryClient } from "react-query";
 import { useFieldArray, useForm } from "react-hook-form";
+
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { createPollService } from "@/services/poll-service";
 
 const formSchema = z.object({
   question: z
@@ -25,13 +29,17 @@ const formSchema = z.object({
   options: z
     .array(
       z.object({
-        value: z.string().url({ message: "Please enter a valid option." }),
+        value: z.string(),
       })
     )
     .min(2),
 });
 
-export function FormCreatePoll() {
+type FormCreatePollProps = {
+  onClose: () => void;
+};
+
+export function FormCreatePoll(props: FormCreatePollProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,8 +53,26 @@ export function FormCreatePoll() {
     control: form.control,
   });
 
+  const pollOptions = form.getValues().options.map(({ value }) => {
+    return value;
+  });
+
+  const mutation = useMutation({
+    mutationFn: () => {
+      return createPollService({
+        options: pollOptions,
+        title: form.getValues().question,
+      });
+    },
+  });
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    try {
+      mutation.mutate();
+      props.onClose();
+    } catch (E) {
+      console.log(E);
+    }
   }
 
   return (
