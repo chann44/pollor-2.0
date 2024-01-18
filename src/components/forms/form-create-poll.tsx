@@ -2,8 +2,9 @@
 
 import * as z from "zod";
 
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { QueryClient, useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -53,13 +54,12 @@ export function FormCreatePoll(props: FormCreatePollProps) {
     control: form.control,
   });
 
-  const pollOptions = form.getValues().options.map(({ value }) => {
-    return value;
-  });
-
   const mutation = useMutation(createPollService);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const pollOptions = values.options.map(({ value }) => {
+      return value;
+    });
     try {
       mutation.mutate(
         {
@@ -69,6 +69,7 @@ export function FormCreatePoll(props: FormCreatePollProps) {
         {
           onSuccess: (data) => {
             props.onClose();
+            toast("Poll has been created");
           },
         }
       );

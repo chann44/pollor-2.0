@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/navbar/site-header";
 import { SiteFooter } from "@/components/footer/site-footer";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AppProviders } from "@/providers";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,6 +35,7 @@ export default function RootLayout({
               <SiteHeader />
               {children}
               <SiteFooter />
+              <Toaster />
             </div>
           </AppProviders>
         </ThemeProvider>
