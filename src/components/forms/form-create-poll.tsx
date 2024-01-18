@@ -57,19 +57,21 @@ export function FormCreatePoll(props: FormCreatePollProps) {
     return value;
   });
 
-  const mutation = useMutation({
-    mutationFn: () => {
-      return createPollService({
-        options: pollOptions,
-        title: form.getValues().question,
-      });
-    },
-  });
+  const mutation = useMutation(createPollService);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      mutation.mutate();
-      props.onClose();
+      mutation.mutate(
+        {
+          options: pollOptions,
+          title: form.getValues().question,
+        },
+        {
+          onSuccess: (data) => {
+            props.onClose();
+          },
+        }
+      );
     } catch (E) {
       console.log(E);
     }
@@ -121,7 +123,7 @@ export function FormCreatePoll(props: FormCreatePollProps) {
           </Button>
         </div>
 
-        <Button className="w-full" type="submit">
+        <Button disabled={mutation.isLoading} className="w-full" type="submit">
           Submit
         </Button>
       </form>
