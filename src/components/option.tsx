@@ -23,10 +23,6 @@ const OptionItem = ({
   const votePercentage = (100 * currentVotes) / totalVotes;
   const { selectedOption, setSelectedOption } = useSelectedOption();
 
-  const currentlySelected = selectedOption?.id === id;
-
-  console.log(currentlySelected);
-
   return (
     <>
       <div
