@@ -1,17 +1,16 @@
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PollInputValidator } from "@/lib/validators/poll-input-validator";
+import { VoteInputValidator } from "@/lib/validators/vote-input-validator";
 import { Option } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-
-type pollOption = Omit<Option, "id" | "createdAt" | "updatedAt">;
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { title, options } = PollInputValidator.parse(body);
+    const { optionId, pollId } = VoteInputValidator.parse(body);
 
     const session = await getAuthSession();
 
@@ -19,33 +18,34 @@ export async function POST(req: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const poll = await db.poll.create({
+    const vote = await db.vote.create({
       data: {
-        title,
-        votes: 0,
-        creator: {
-          connect: {
-            id: session.user.id,
-          },
-        },
+        optionId: optionId,
+        voterId: session.user.id,
+        pollId: pollId,
+        voted: true,
       },
     });
 
-    const pollOptions: pollOption[] = options.map((text) => {
-      return {
-        pollId: poll?.id,
-        text: text,
-        vote: 0,
-      };
+    await db.poll.update({
+      where: {
+        id: pollId,
+      },
+      data: {
+        votes: { increment: 1 },
+      },
     });
 
-    pollOptions.map(async (pollOption) => {
-      await db.option.create({
-        data: pollOption,
-      });
+    await db.option.update({
+      where: {
+        id: optionId,
+      },
+      data: {
+        vote: { increment: 1 },
+      },
     });
 
-    return new NextResponse("OK", {
+    return new NextResponse(JSON.stringify(vote), {
       status: 200,
     });
   } catch (error) {

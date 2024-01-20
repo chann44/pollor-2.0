@@ -15,7 +15,15 @@ export async function GET(req: Request) {
       where: {
         creatorId: session.user.id,
       },
+      include: {
+        Vote: {
+          select: {
+            voterId: true,
+          },
+        },
+      },
     });
+
     return NextResponse.json(polls, { status: 200 });
   } catch (error) {
     console.log(error);

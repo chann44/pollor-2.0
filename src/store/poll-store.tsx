@@ -1,7 +1,5 @@
 "use client";
 
-import { Option } from "@prisma/client";
-
 import {
   type ReactNode,
   createContext,
@@ -12,8 +10,8 @@ import {
 } from "react";
 
 type PollContextType = {
-  selectedOption: Option | null;
-  setSelectedOption: Dispatch<SetStateAction<Option | null>>;
+  selectedOption: number | null;
+  setSelectedOption: Dispatch<SetStateAction<number | null>>;
 };
 
 const PollContext = createContext<PollContextType>({} as PollContextType);
@@ -23,7 +21,7 @@ export function useSelectedOption() {
 }
 
 export function PollStore({ children }: { children: ReactNode }) {
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   return (
     <PollContext.Provider
       value={{

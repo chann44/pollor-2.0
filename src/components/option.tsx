@@ -1,12 +1,17 @@
 "use client";
 
 import { useState } from "react";
+
 import type { Option } from "@prisma/client";
-import { useSelectedOption } from "@/store/poll-store";
+import { cn, getVotePercentages } from "@/lib/utils";
+
+import { useMutation } from "react-query";
+import { VoteService } from "@/services/vote-service";
 
 type OptionProps = Option & {
-  doVote: CallableFunction;
   totalVotes: number;
+  userVoted: boolean;
+  votedOptionId: number | null;
 };
 
 const OptionItem = ({
@@ -14,32 +19,41 @@ const OptionItem = ({
   text,
   vote,
   pollId,
-  createdAt,
-  updatedAt,
-  doVote,
   totalVotes,
+  votedOptionId,
 }: OptionProps) => {
   const [currentVotes, setCurrentVotes] = useState(vote);
-  const votePercentage = (100 * currentVotes) / totalVotes;
-  const { selectedOption, setSelectedOption } = useSelectedOption();
+  const votePercentage = getVotePercentages({
+    currentVotes,
+    totalVotes,
+  });
+  const [votedOption, setVotedOption] = useState<number | null>(
+    () => votedOptionId
+  );
+  const voteMutation = useMutation(VoteService);
+  const doVote = () => {
+    voteMutation.mutate(
+      {
+        optionId: id,
+        pollId: pollId,
+      },
+      {
+        onSuccess: () => {
+          setCurrentVotes(currentVotes + 1);
+          setVotedOption(id);
+        },
+      }
+    );
+  };
 
   return (
     <>
       <div
-        className="border relative w-full cursor-pointer flex items-center "
-        onClick={(e) => {
-          setCurrentVotes(currentVotes + 1);
-          doVote(id, pollId, setCurrentVotes, currentVotes);
-          setSelectedOption((value) => ({
-            ...value,
-            id,
-            text,
-            vote,
-            pollId,
-            createdAt,
-            updatedAt,
-          }));
-        }}
+        className={cn(
+          "border relative w-full cursor-pointer flex items-center",
+          (votedOption || votedOptionId) == id && "border-green-500"
+        )}
+        onClick={() => doVote()}
       >
         <p className="p-4 flex justify-between w-full">
           <span>{text}</span>

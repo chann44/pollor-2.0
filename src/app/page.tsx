@@ -5,6 +5,7 @@ export default async function Home() {
   const data = await db.poll.findMany({
     include: {
       Option: true,
+      Vote: true,
     },
   });
   return (
