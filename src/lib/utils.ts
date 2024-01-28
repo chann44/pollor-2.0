@@ -10,6 +10,13 @@ type getVotePercentagesParams = {
   totalVotes: number;
 };
 
-export function getVotePercentages(data: getVotePercentagesParams) {
-  return (100 * data.currentVotes) / data.totalVotes;
+export function getVotePercentages({
+  currentVotes,
+  totalVotes,
+}: getVotePercentagesParams) {
+  if (totalVotes === 0) {
+    return 0;
+  }
+
+  return (100 * currentVotes) / totalVotes;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import type { Option } from "@prisma/client";
 import { cn, getVotePercentages } from "@/lib/utils";
@@ -12,6 +12,7 @@ type OptionProps = Option & {
   totalVotes: number;
   userVoted: boolean;
   votedOptionId: number | null;
+  setVoted: Dispatch<SetStateAction<boolean>>;
 };
 
 const OptionItem = ({
@@ -21,11 +22,13 @@ const OptionItem = ({
   pollId,
   totalVotes,
   votedOptionId,
+  setVoted,
 }: OptionProps) => {
   const [currentVotes, setCurrentVotes] = useState(vote);
+  const [currentTotalVotes, setCurrentTotalVotes] = useState(totalVotes);
   const votePercentage = getVotePercentages({
     currentVotes,
-    totalVotes,
+    totalVotes: currentTotalVotes,
   });
   const [votedOption, setVotedOption] = useState<number | null>(
     () => votedOptionId
@@ -39,7 +42,9 @@ const OptionItem = ({
       },
       {
         onSuccess: () => {
+          setVoted(true);
           setCurrentVotes(currentVotes + 1);
+          setCurrentTotalVotes(currentTotalVotes + 1);
           setVotedOption(id);
         },
       }

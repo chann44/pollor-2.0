@@ -10,4 +10,4 @@ Next Tasks
 5. allow to report a poll and if a user is the creator of the poll delete the poll 
 6. user profile page to show some basic info and all the polls that they have crated 
 7. ability to add image to a poll
-8. realtime votes (use long polling)
+8. realtime votes (use long polling

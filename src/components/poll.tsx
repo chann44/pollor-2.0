@@ -1,10 +1,12 @@
 "use client";
 
-import type { Option, Poll, Vote } from "@prisma/client";
-import { PollStore } from "@/store/poll-store";
+import { useState, useMemo, useEffect } from "react";
 
-import OptionItem from "@/components/option";
 import { useSession } from "next-auth/react";
+import type { Option, Poll, Vote } from "@prisma/client";
+
+import { PollStore } from "@/store/poll-store";
+import OptionItem from "@/components/option";
 
 type PollData = Poll & {
   Option: Option[];
@@ -15,14 +17,19 @@ export function Poll(props: PollData) {
   const { title, Option: options, Vote: vote, votes } = props;
   const { data } = useSession();
 
-  const votedOption = vote.reduce((accumulator, currentVote) => {
-    if (currentVote.voterId === data?.user?.id) {
-      return currentVote;
-    }
-    return accumulator;
-  }, {} as Vote);
+  const votedOption = useMemo(() => {
+    return vote.find((v) => v.voterId === data?.user?.id) || ({} as Vote);
+  }, [vote, data?.user?.id]);
 
-  const userVoted = votedOption?.voterId === data?.user?.id;
+  const [userVoted, setUserVoted] = useState<boolean>(
+    () => votedOption?.voterId === data?.user?.id
+  );
+
+  useEffect(() => {
+    setUserVoted(votedOption?.voterId === data?.user?.id);
+  }, [votedOption, data?.user?.id]);
+
+  console.log("votedOption", votedOption, userVoted);
 
   return (
     <PollStore>
@@ -33,6 +40,7 @@ export function Poll(props: PollData) {
           return (
             <>
               <OptionItem
+                setVoted={setUserVoted}
                 userVoted={userVoted}
                 votedOptionId={votedOption?.optionId}
                 key={index}
